@@ -37,13 +37,14 @@ def handle_login():
     if not request.is_json:
         return jsonify({"msg": "Missing JSON in request / Falta JSON en la solicitud"}), 400
     params = request.get_json()
-    email = params.get('email', None)
-    password = params.get('password', None)
+    email = params.get('username', None)
+    password = params.get('pass', None)
     if not email:
         return jsonify({"msg": "Missing email parameter / Falta el parametro de correo electronico"}), 400
     if not password:
         return jsonify({"msg": "Missing password parameter / Falta el parametro de contrasena"}), 400
-    user = User.query.filter_by(email=email).one_or_none()
+    print('---------',email)
+    user = User.query.filter_by(username=email)
     if not user:
         return jsonify({"msg": "User does not exist / El usuario no existe"}), 404
     if user.check_password(password):
@@ -55,7 +56,7 @@ def handle_login():
         return jsonify({"msg": "Bad credentials / Credenciales incorrectas"}), 401
     
 @app.route('/bills/<int:id_user>', methods=['GET'])
-##@jwt_required()
+@jwt_required()
 def handle_bills(id_user):
     bills = Bill.query.filter_by(user_id=id_user)
     print(bills)
@@ -69,7 +70,7 @@ def handle_bills(id_user):
     return jsonify(response_body),200
 
 @app.route('/bills', methods=['POST'])
-#@jwt_required()
+@jwt_required()
 def add_new_bill():
     #email = get_jwt_identity()
     body= request.get_json()
@@ -98,7 +99,7 @@ def add_new_bill():
     return bill.serialize(), 200
 
 @app.route('/bills/<int:id_bill>', methods=['PATCH'])
-#@jwt_required()
+@jwt_required()
 def upgrade_bill(id_bill):
     body = request.get_json()
     bill_to_upgrade = Bill.query.get(id_bill)
@@ -119,7 +120,7 @@ def upgrade_bill(id_bill):
 
 
 @app.route('/bills/<int:id_bill>', methods=['DELETE'])
-#@jwt_required()
+@jwt_required()
 def delete_bill(id_bill): 
     db.session.delete(Bill.query.get_or_404(id_bill) )
     db.session.commit() 

@@ -33,7 +33,6 @@ class User(db.Model):
         )
 
     def check_password(self, password):
-        print(f"este es el password:{password}")
         return check_password_hash(
             self.hashed_password,
             f"{password}{self.salt}"
